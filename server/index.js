@@ -3,6 +3,7 @@ const parser = require('body-parser');
 const path = require('path');
 const db = require('../db/index.js');
 const helpers = require('../helpers/helpers.js');
+const dummyData = require('../dummyData.js'); 
 
 const app = express();
 
@@ -10,8 +11,13 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.use(parser.json());
 
+let dummyDataPromise = new Promise((resolve, reject) => {
+  return resolve(dummyData);
+});
+
 app.post('/movies', function(req, res) {
-  helpers.getMovieData(req.body.query)
+  // helpers.getMovieData(req.body.query)
+  dummyDataPromise
     .then((results) => {
       let movie = results.data;
       if (movie.Response === 'True') {
@@ -31,8 +37,8 @@ app.post('/movies', function(req, res) {
   
 });
 
-app.get('/movies', function(req, res) {
-  db.get()
+app.get('/movies*', function(req, res) {
+  db.get(req.params[0])
     .then((response) => {
       res.send(response);
     })

@@ -1,5 +1,5 @@
 import React from 'react';
-//import Movie from './Movie.js';
+import Movie from './Movie.jsx';
 
 class MovieList extends React.Component {
   constructor(props) {
@@ -11,16 +11,17 @@ class MovieList extends React.Component {
       <table style={{width: '100%'}}>
         <tbody>
           <tr>
-            <th>Rank</th>
             <th>Movie</th>
-            <th>IMDb Rating</th>
+            <th><a href='#' onClick={this.props.changeSortImdb}>IMDb</a></th>
+            <th><a href='#' onClick={this.props.changeSortRotten}>Rotten Tomatoes</a></th>
+            <th><a href='#' onClick={this.props.changeSortMeta}>Metacritic</a></th>
+            <th><a href='#' onClick={this.props.changeSortAverage}>Average</a></th>
           </tr>
-          {this.props.movies.map((movie, i) => {
-            return (<tr key={i}>
-              <td style={{textAlign: 'center'}}>{i + 1}</td>
-              <td style={{textAlign: 'center'}}>{movie.title}</td>
-              <td style={{textAlign: 'center'}}>{movie.imdbRank}</td>
-            </tr>
+          {this.props.movies.map((movie) => {
+            return (
+              <React.Fragment key={movie._id}>
+                <Movie movie={movie}/>
+              </React.Fragment>
             );
           })}
         </tbody>
