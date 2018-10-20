@@ -30,8 +30,8 @@ let dummyDataPromise = new Promise((resolve, reject) => {
 });
 
 app.post('/movies', function(req, res) {
-  // helpers.getMovieData(req.body.query)
-  dummyDataPromise
+  helpers.getMovieData(req.body.query)
+  // dummyDataPromise
     .then((results) => {
       let movie = results.data;
       console.log(movie);
