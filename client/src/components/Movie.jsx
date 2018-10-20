@@ -24,7 +24,7 @@ class Movie extends React.Component {
           <td style={{textAlign: 'center'}}>{this.props.movie.imdbRank}</td>
           <td style={{textAlign: 'center'}}>{this.props.movie.rottenTomatoesRank}</td>
           <td style={{textAlign: 'center'}}>{this.props.movie.metacriticRank}</td>
-          <td style={{textAlign: 'center'}}>{Math.round(this.props.movie.customNum)}</td>
+          <td style={{textAlign: 'center'}}>{Math.round(this.props.movie.customNum) + '%'}</td>
         </tr>
         <MovieDescription movie={this.props.movie} description={this.state.description}/>
       </React.Fragment>     

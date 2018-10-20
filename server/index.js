@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const parser = require('body-parser');
 const path = require('path');
 const db = require('../db/index.js');
@@ -11,6 +12,12 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.use(parser.json());
 
+app.use(session({
+  secret: 'hrmvp',
+  resave: false,
+  saveUninitialized: true
+}));
+
 let dummyDataPromise = new Promise((resolve, reject) => {
   return resolve(dummyData);
 });
@@ -21,7 +28,7 @@ app.post('/movies', function(req, res) {
     .then((results) => {
       let movie = results.data;
       if (movie.Response === 'True') {
-        db.save(movie)
+        db.save(movie, req.session.user || req.sessionID)
           .then(() => {
             res.status(201).send();
           })
@@ -34,11 +41,10 @@ app.post('/movies', function(req, res) {
         res.status(201).send({badSearch: true});
       }
     });
-  
 });
 
 app.get('/movies*', function(req, res) {
-  db.get(req.params[0])
+  db.get(req.params[0], req.session.user || req.sessionID)
     .then((response) => {
       res.send(response);
     })
@@ -50,7 +56,7 @@ app.get('/movies*', function(req, res) {
 });
 
 app.get('/clear', function(req, res) {
-  db.clear()
+  db.clear(req.session.user || req.sessionID)
     .then(() => {
       res.send();
     })
@@ -59,6 +65,54 @@ app.get('/clear', function(req, res) {
         console.error(err);
       }
     });
+});
+
+app.get('/newSession', function(req, res) {
+  db.clear(req.sessionID)
+    .then(() => {
+      res.send();
+    })
+    .catch((err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+});
+
+app.post('/signup', function(req, res) {
+  db.findUser(req.body.user)
+    .then((returnedUser) => {
+      if (returnedUser[0]) {
+        res.status(201).send({takenUser: true})
+      } else {
+        db.saveUser(req.body.user)
+        .then(() => {
+          req.session.user = req.body.user;
+          res.status(201).send();
+        })
+      }
+    })
+});
+
+app.post('/login', function(req, res) {
+  db.findUser(req.body.user)
+    .then((returnedUser) => {
+      if (returnedUser[0]) {
+        req.session.user = req.body.user;
+        res.status(201).send();
+      } else {
+        res.status(201).send({noUser: true});
+      }
+    })
+});
+
+app.get('/logout', function(req, res) {
+  req.session.regenerate((err) => {
+    if (err) {
+      console.error(err);
+    }
+    res.send();
+  })
 });
 
 app.get('/favicon', function(req,res) {

@@ -3,6 +3,7 @@ import MovieList from './MovieList.jsx';
 import Search from './Search.jsx';
 import dummyData from '../../../dummyData.js';
 import axios from 'axios';
+import Login from './Login.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,7 +12,12 @@ class App extends React.Component {
       userInput: '',
       movies: [],
       badSearch: false,
-      sort: 'customNum'
+      sort: 'customNum',
+      takenUser: false,
+      username: '',
+      noUser: false,
+      login: false,
+      user: ''
     };
     this.updateQuery = this.updateQuery.bind(this);
     this.submitSearch = this.submitSearch.bind(this);
@@ -21,6 +27,10 @@ class App extends React.Component {
     this.changeSortRotten = this.changeSortRotten.bind(this);
     this.changeSortAverage = this.changeSortAverage.bind(this);
     this.clearList = this.clearList.bind(this);
+    this.addUser = this.addUser.bind(this);
+    this.updateUser = this.updateUser.bind(this);
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   updateQuery (e) {
@@ -36,11 +46,13 @@ class App extends React.Component {
       .then((response) => {
         if (response.data.badSearch) {
           this.setState({
-            badSearch: true
+            badSearch: true,
+            userInput: ''
           })
         } else {
           this.setState({
-            badSearch: false
+            badSearch: false,
+            userInput: ''
           })
         }
       }).then(() => {
@@ -111,13 +123,93 @@ class App extends React.Component {
     this.getMovies();
   }
 
+  addUser() {
+    axios.post('/signup', {
+      user: this.state.username
+    })
+      .then((response) => {
+        if (response.data.takenUser) {
+          this.setState({
+            takenUser: true,
+            username: ''
+          })
+        } else {
+          let userTemp = this.state.username;
+          this.setState({
+            takenUser: false,
+            noUser: false,
+            login: true,
+            username: '',
+            user: userTemp
+          })
+        }
+      }).then(() => {
+        this.getMovies();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  logout() {
+    axios.get('/logout')
+      .then(() => {
+        this.setState({
+          login: false,
+          user: '',
+          movies: []
+        })
+      })
+  }
+
+  login() {
+    axios.post('/login', {
+      user: this.state.username
+    })
+      .then((response) => {
+        if (response.data.noUser) {
+          this.setState({
+            noUser: true,
+            username: ''
+          })
+        } else {
+          let userTemp = this.state.username;
+          this.setState({
+            takenUser: false,
+            noUser: false,
+            login: true,
+            username: '',
+            user: userTemp
+          })
+        }
+      }).then(() => {
+        this.getMovies();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  updateUser(e) {
+    this.setState({
+      username: e.target.value
+    })
+  }
+
   render() {
     return (<React.Fragment>
+      <h4>Login to see saved movies:
+        <Login noUser={this.state.noUser} username={this.state.username} login={this.login} updateUser={this.updateUser} addUser={this.addUser} takenUser={this.state.takenUser}/>
+        {this.state.login && <p style={{float: 'right'}}>
+          {this.state.user}
+          <input type='submit' value='Logout' onClick={this.logout} style={{margin: '20px'}}></input>
+        </p>}     
+      </h4>
       <h2>Add a movie:</h2>
-        <div>
-          <Search input={this.state.userInput} update={this.updateQuery} search={this.submitSearch} badsearch={this.state.badSearch}/>     
-        </div>
-        <h3>Rank by:
+      <div>
+        <Search input={this.state.userInput} update={this.updateQuery} search={this.submitSearch} badsearch={this.state.badSearch}/>     
+      </div>
+      <h3>Rank by:
         <input type='submit' value='IMDb Score' onClick={this.changeSortImdb} style={{margin: '20px'}}></input>
         <input type='submit' value='Rotten Tomatoes Score' onClick={this.changeSortRotten} style={{margin: '20px'}}></input>
         <input type='submit' value='Metacritic Score' onClick={this.changeSortMeta} style={{margin: '20px'}}></input>

@@ -25,12 +25,18 @@ let movieSchema = mongoose.Schema({
   actors: String,
   poster: String,
   released: String,
-  link: String
+  link: String,
+  user: String
+});
+
+let userSchema = mongoose.Schema({
+  user: String
 });
 
 var Movie = mongoose.model('movie', movieSchema);
+var User = mongoose.model('user', userSchema);
 
-exports.save = function(movie) {
+exports.save = function(movie, user) {
   let ratings = movie.Ratings.map((rating) => {
     return rating.Value;
   });
@@ -38,46 +44,61 @@ exports.save = function(movie) {
   let rotten = parseFloat(ratings[1].slice(0, 3).replace('%', '')) || 0;
   let meta = parseFloat(ratings[2].slice(0, 3).replace('/', '')) || 0;
   let customRank = (imdb + rotten + meta) / Math.min(3, ratings.length);
-  let newMovie = new Movie({
-    title: movie.Title || 'N/A',
-    imdbRank: movie.Ratings[0].Value || 'N/A',
-    rottenTomatoesRank: movie.Ratings[1].Value || 'N/A',
-    metacriticRank: movie.Ratings[2].Value || 'N/A',
-    imdbNum: imdb || 'N/A',
-    rottenTomatoesNum: rotten || 'N/A',
-    metacriticNum: meta || 'N/A',
-    customNum: customRank,
-    rating: movie.Rated || 'N/A',
-    plot: movie.Plot || 'N/A',
-    awards: movie.Awards || 'N/A',
-    year: movie.Year,
-    released: movie.Released,
-    runtime: movie.Runtime,
-    genre: movie.Genre,
-    director: movie.Director,
-    writer: movie.Writer,
-    actors: movie.Actors,
-    poster: movie.Poster,
-    released: movie.Released,
-    link: movie.imdbID
-  });
-  return newMovie.save().catch((err) => {
+  return Movie.findOneAndUpdate(
+    {title: movie.Title, user: user},
+    {
+      title: movie.Title || 'N/A',
+      imdbRank: movie.Ratings[0].Value || 'N/A',
+      rottenTomatoesRank: movie.Ratings[1].Value || 'N/A',
+      metacriticRank: movie.Ratings[2].Value || 'N/A',
+      imdbNum: imdb || 'N/A',
+      rottenTomatoesNum: rotten || 'N/A',
+      metacriticNum: meta || 'N/A',
+      customNum: customRank,
+      rating: movie.Rated || 'N/A',
+      plot: movie.Plot || 'N/A',
+      awards: movie.Awards || 'N/A',
+      year: movie.Year,
+      released: movie.Released,
+      runtime: movie.Runtime,
+      genre: movie.Genre,
+      director: movie.Director,
+      writer: movie.Writer,
+      actors: movie.Actors,
+      poster: movie.Poster,
+      released: movie.Released,
+      link: movie.imdbID,
+      user: user
+    },
+    {upsert: true}
+  ).exec()
+};
+
+exports.get = function(sort, user) {
+  return Movie.find({user: user}).sort('-' + sort).catch((err) => {
     if (err) {
       console.error(err);
     }
   });
 };
 
-exports.get = function (sort) {
-  return Movie.find().sort('-' + sort).catch((err) => {
+exports.saveUser = function(user) {
+  let newUser = new User({
+    user: user
+  })
+  return newUser.save();
+}
+
+exports.findUser = function(user) {
+  return User.find({user: user}).catch((err) => {
     if (err) {
       console.error(err);
     }
   });
-};
+}
 
-exports.clear = function (sort) {
-  return Movie.remove().catch((err) => {
+exports.clear = function(user) {
+  return Movie.deleteMany({user: user}).catch((err) => {
     if (err) {
       console.error(err);
     }
