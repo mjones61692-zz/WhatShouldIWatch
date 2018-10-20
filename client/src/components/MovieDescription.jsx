@@ -13,7 +13,7 @@ class MovieDescription extends React.Component {
             <div style={{width: '100%'}}>
               <div style={{float: 'left', display: 'inline-block', width: '30%'}}>
                 <a href={'https://www.imdb.com/title/' + this.props.movie.link}><img 
-                  style={{maxWidth: '100%', height: 'auto', width: '100%'}} 
+                  style={{maxWidth: '100%', height: 'auto', width: 'auto'}} 
                   src={this.props.movie.poster}
                 /></a>
               </div>

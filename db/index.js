@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const promise = require('bluebird');
 mongoose.Promise = promise;
 
-mongoose.connect(process.env.MONGO, {useNewUrlParser: true});
+let mongouri = process.env.MONGO || require('../config.js').MONGO;
+
+mongoose.connect(mongouri, {useNewUrlParser: true});
 
 let movieSchema = mongoose.Schema({
   title: String,
@@ -104,3 +106,5 @@ exports.clear = function(user) {
     }
   });
 };
+
+exports.connection = mongoose.connection;

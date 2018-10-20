@@ -4,7 +4,8 @@ const parser = require('body-parser');
 const path = require('path');
 const db = require('../db/index.js');
 const helpers = require('../helpers/helpers.js');
-const dummyData = require('../dummyData.js'); 
+const dummyData = require('../dummyData.js');
+const MongoStore = require('connect-mongo')(session);
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.use(parser.json());
 app.use(session({
   secret: 'hrmvp',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: new MongoStore({mongooseConnection: db.connection})
 }));
 
 let dummyDataPromise = new Promise((resolve, reject) => {
