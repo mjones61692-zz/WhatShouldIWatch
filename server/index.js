@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongo')(session);
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static(path.join(__dirname, '../client/dist/index.html')));
 
 app.use(parser.json());
 
@@ -59,18 +59,6 @@ app.get('/movies*', function(req, res) {
 
 app.get('/clear', function(req, res) {
   db.clear(req.session.user || req.sessionID)
-    .then(() => {
-      res.send();
-    })
-    .catch((err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-});
-
-app.get('/newSession', function(req, res) {
-  db.clear(req.sessionID)
     .then(() => {
       res.send();
     })
