@@ -40,12 +40,21 @@ var Movie = mongoose.model('movie', movieSchema);
 var User = mongoose.model('user', userSchema);
 
 exports.save = function(movie, user) {
+  let imdb = null;
+  let meta = null;
+  let rotten = null;
   let ratings = movie.Ratings.map((rating) => {
     return rating.Value;
   });
-  let imdb = parseFloat(ratings[0].slice(0, 3)) * 10 || 0;
-  let rotten = parseFloat(ratings[1].slice(0, 3).replace('%', '')) || 0;
-  let meta = parseFloat(ratings[2].slice(0, 3).replace('/', '')) || 0;
+  if (ratings[0]) {
+    imdb = parseFloat(ratings[0].slice(0, 3)) * 10 || 0;
+  }
+  if (ratings[1]) {
+    rotten = parseFloat(ratings[1].slice(0, 3).replace('%', '')) || 0;
+  }
+  if (ratings[2]) {
+    meta = parseFloat(ratings[2].slice(0, 3).replace('/', '')) || 0;
+  }
   let customRank = (imdb + rotten + meta) / Math.min(3, ratings.length);
   return Movie.findOneAndUpdate(
     {title: movie.Title, user: user},

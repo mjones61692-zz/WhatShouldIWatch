@@ -63,6 +63,10 @@ app.get('/movies*', function(req, res) {
     });
 });
 
+app.get('/loggedin', function(req, res) {
+  res.send(req.session.user)
+})
+
 app.get('/clear', function(req, res) {
   db.clear(req.session.user || req.sessionID)
     .then(() => {

@@ -124,12 +124,22 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getMovies();
+    axios.get('/loggedin')
+      .then((response) => {
+        this.setState({
+          user: response.data,
+          login: true
+        })
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   addUser() {
     axios.post('/signup', {
       user: this.state.username,
-      pass: hash
+      pass: this.state.password
     })
     .then((response) => {
       if (response.data.takenUser) {
