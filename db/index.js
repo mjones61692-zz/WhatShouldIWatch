@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const promise = require('bluebird');
 mongoose.Promise = promise;
 
-mongoose.connect('mongodb://localhost:27017/movies', {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO, {useNewUrlParser: true});
 
 let movieSchema = mongoose.Schema({
   title: String,
