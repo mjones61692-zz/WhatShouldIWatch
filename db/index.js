@@ -43,29 +43,35 @@ exports.save = function(movie, user) {
   let imdb = null;
   let meta = null;
   let rotten = null;
+  let imdbRank = null;
+  let metaRank = null;
+  let rottenRank = null;
   let ratings = movie.Ratings.map((rating) => {
     return rating.Value;
   });
   if (ratings[0]) {
     imdb = parseFloat(ratings[0].slice(0, 3)) * 10 || 0;
+    imdbRank = ratings[0];
   }
   if (ratings[1]) {
     rotten = parseFloat(ratings[1].slice(0, 3).replace('%', '')) || 0;
+    rottenRank = ratings[1];
   }
   if (ratings[2]) {
     meta = parseFloat(ratings[2].slice(0, 3).replace('/', '')) || 0;
+    metaRank = ratings[2];
   }
   let customRank = (imdb + rotten + meta) / Math.min(3, ratings.length);
   return Movie.findOneAndUpdate(
     {title: movie.Title, user: user},
     {
       title: movie.Title || 'N/A',
-      imdbRank: movie.Ratings[0].Value || 'N/A',
-      rottenTomatoesRank: movie.Ratings[1].Value || 'N/A',
-      metacriticRank: movie.Ratings[2].Value || 'N/A',
-      imdbNum: imdb || 'N/A',
-      rottenTomatoesNum: rotten || 'N/A',
-      metacriticNum: meta || 'N/A',
+      imdbRank: imdbRank || 'N/A',
+      rottenTomatoesRank: rottenRank || 'N/A',
+      metacriticRank: metaRank || 'N/A',
+      imdbNum: imdb || null,
+      rottenTomatoesNum: rotten || null,
+      metacriticNum: meta || null,
       customNum: customRank,
       rating: movie.Rated || 'N/A',
       plot: movie.Plot || 'N/A',
