@@ -12,10 +12,10 @@ class MovieList extends React.Component {
         <tbody>
           <tr>
             <th>Movie</th>
-            <th><a href='#' onClick={this.props.changeSortImdb}>IMDb</a></th>
-            <th><a href='#' onClick={this.props.changeSortRotten}>Rotten Tomatoes</a></th>
-            <th><a href='#' onClick={this.props.changeSortMeta}>Metacritic</a></th>
-            <th><a href='#' onClick={this.props.changeSortAverage}>Average</a></th>
+            <th>IMDb</th>
+            <th>Rotten Tomatoes</th>
+            <th>Metacritic</th>
+            <th>Average</th>
           </tr>
           {this.props.movies.map((movie) => {
             return (

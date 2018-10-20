@@ -75,3 +75,11 @@ exports.get = function (sort) {
     }
   });
 };
+
+exports.clear = function (sort) {
+  return Movie.remove().catch((err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+};

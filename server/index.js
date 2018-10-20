@@ -49,11 +49,21 @@ app.get('/movies*', function(req, res) {
     });
 });
 
+app.get('/clear', function(req, res) {
+  db.clear()
+    .then(() => {
+      res.send();
+    })
+    .catch((err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+});
+
 app.get('/favicon', function(req,res) {
   res.send();
 });
-
-
 
 const port = process.env.PORT || 8888;
 

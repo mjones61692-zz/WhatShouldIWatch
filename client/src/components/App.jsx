@@ -20,6 +20,7 @@ class App extends React.Component {
     this.changeSortMeta = this.changeSortMeta.bind(this);
     this.changeSortRotten = this.changeSortRotten.bind(this);
     this.changeSortAverage = this.changeSortAverage.bind(this);
+    this.clearList = this.clearList.bind(this);
   }
 
   updateQuery (e) {
@@ -82,6 +83,18 @@ class App extends React.Component {
     })
   }
 
+  clearList() {
+    axios.get('/clear')
+      .then(() => {
+        this.setState({
+          movies: []
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
   getMovies() {
     axios.get('/movies' + this.state.sort)
       .then((response) => {
@@ -104,7 +117,15 @@ class App extends React.Component {
         <div>
           <Search input={this.state.userInput} update={this.updateQuery} search={this.submitSearch} badsearch={this.state.badSearch}/>     
         </div>
-      <h2>Your movie list:</h2>
+        <h3>Rank by:
+        <input type='submit' value='IMDb Score' onClick={this.changeSortImdb} style={{margin: '20px'}}></input>
+        <input type='submit' value='Rotten Tomatoes Score' onClick={this.changeSortRotten} style={{margin: '20px'}}></input>
+        <input type='submit' value='Metacritic Score' onClick={this.changeSortMeta} style={{margin: '20px'}}></input>
+        <input type='submit' value='Average' onClick={this.changeSortAverage} style={{margin: '20px'}}></input>
+      </h3>
+      <h2>Your movie list:
+        <input type='submit' value='Clear List' onClick={this.clearList} style={{margin: '20px'}}></input>
+      </h2>
       <div>
         <MovieList movies={this.state.movies} 
         changeSortImdb={this.changeSortImdb}
