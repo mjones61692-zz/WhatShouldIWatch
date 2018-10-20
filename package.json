@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/mjones61692/hrnyc18-mvp#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "bluebird": "^3.5.2",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
