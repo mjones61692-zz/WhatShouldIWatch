@@ -17,7 +17,9 @@ class App extends React.Component {
       username: '',
       noUser: false,
       login: false,
-      user: ''
+      user: '',
+      wrongPassword: false,
+      password: ''
     };
     this.updateQuery = this.updateQuery.bind(this);
     this.submitSearch = this.submitSearch.bind(this);
@@ -31,6 +33,7 @@ class App extends React.Component {
     this.updateUser = this.updateUser.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
   }
 
   updateQuery (e) {
@@ -125,30 +128,34 @@ class App extends React.Component {
 
   addUser() {
     axios.post('/signup', {
-      user: this.state.username
+      user: this.state.username,
+      pass: hash
     })
-      .then((response) => {
-        if (response.data.takenUser) {
-          this.setState({
-            takenUser: true,
-            username: ''
-          })
-        } else {
-          let userTemp = this.state.username;
-          this.setState({
-            takenUser: false,
-            noUser: false,
-            login: true,
-            username: '',
-            user: userTemp
-          })
-        }
-      }).then(() => {
-        this.getMovies();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    .then((response) => {
+      if (response.data.takenUser) {
+        this.setState({
+          takenUser: true,
+          username: '',
+          password: ''
+        })
+      } else {
+        let userTemp = this.state.username;
+        this.setState({
+          takenUser: false,
+          noUser: false,
+          login: true,
+          username: '',
+          user: userTemp,
+          wrongPassword: false,
+          password: ''
+        })
+      }
+    }).then(() => {
+      this.getMovies();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
   }
 
   logout() {
@@ -164,13 +171,21 @@ class App extends React.Component {
 
   login() {
     axios.post('/login', {
-      user: this.state.username
+      user: this.state.username,
+      pass: this.state.password
     })
       .then((response) => {
         if (response.data.noUser) {
           this.setState({
             noUser: true,
-            username: ''
+            username: '',
+            password: ''
+          })
+        } else if (response.data.wrongPassword) {
+          this.setState({
+            wrongPassword: true,
+            username: '',
+            password: ''
           })
         } else {
           let userTemp = this.state.username;
@@ -179,7 +194,9 @@ class App extends React.Component {
             noUser: false,
             login: true,
             username: '',
-            user: userTemp
+            user: userTemp,
+            wrongPassword: false,
+            password: ''
           })
         }
       }).then(() => {
@@ -196,10 +213,16 @@ class App extends React.Component {
     })
   }
 
+  updatePassword(e) {
+    this.setState({
+      password: e.target.value
+    })
+  }
+
   render() {
     return (<React.Fragment>
       <h4>Login to see saved movies:
-        <Login noUser={this.state.noUser} username={this.state.username} login={this.login} updateUser={this.updateUser} addUser={this.addUser} takenUser={this.state.takenUser}/>
+        <Login wrongPassword={this.state.wrongPassword} password={this.state.password} updatePassword={this.updatePassword} noUser={this.state.noUser} username={this.state.username} login={this.login} updateUser={this.updateUser} addUser={this.addUser} takenUser={this.state.takenUser}/>
         {this.state.login && <p style={{float: 'right'}}>
           {this.state.user}
           <input type='submit' value='Logout' onClick={this.logout} style={{margin: '20px'}}></input>
@@ -207,7 +230,7 @@ class App extends React.Component {
       </h4>
       <h2>Add a movie:</h2>
       <div>
-        <Search input={this.state.userInput} update={this.updateQuery} search={this.submitSearch} badsearch={this.state.badSearch}/>     
+        <Search input={this.state.userInput} update={this.updateQuery} search={this.submitSearch} badSearch={this.state.badSearch}/>     
       </div>
       <h3>Rank by:
         <input type='submit' value='IMDb Score' onClick={this.changeSortImdb} style={{margin: '20px'}}></input>

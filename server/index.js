@@ -6,8 +6,13 @@ const db = require('../db/index.js');
 const helpers = require('../helpers/helpers.js');
 const dummyData = require('../dummyData.js');
 const MongoStore = require('connect-mongo')(session);
+const bcrypt = require('bcrypt-nodejs');
+const Promise = require('bluebird');
 
 const app = express();
+
+const hash = Promise.promisify(bcrypt.hash);
+const compareHash = Promise.promisify(bcrypt.compare);
 
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
@@ -29,6 +34,7 @@ app.post('/movies', function(req, res) {
   dummyDataPromise
     .then((results) => {
       let movie = results.data;
+      console.log(movie);
       if (movie.Response === 'True') {
         db.save(movie, req.session.user || req.sessionID)
           .then(() => {
@@ -75,11 +81,14 @@ app.post('/signup', function(req, res) {
       if (returnedUser[0]) {
         res.status(201).send({takenUser: true})
       } else {
-        db.saveUser(req.body.user)
-        .then(() => {
-          req.session.user = req.body.user;
-          res.status(201).send();
-        })
+        hash(req.body.pass, null, null)
+          .then((hash) => {
+            db.saveUser(req.body.user, hash)
+            .then(() => {
+              req.session.user = req.body.user;
+              res.status(201).send();
+            })
+          });
       }
     })
 });
@@ -88,8 +97,15 @@ app.post('/login', function(req, res) {
   db.findUser(req.body.user)
     .then((returnedUser) => {
       if (returnedUser[0]) {
-        req.session.user = req.body.user;
-        res.status(201).send();
+        compareHash(req.body.pass, returnedUser[0].password)
+          .then((bool) => {
+            if (bool) {
+              req.session.user = req.body.user;
+              res.status(201).send();
+            } else {
+              res.status(201).send({wrongPassword: true});
+            }
+          })
       } else {
         res.status(201).send({noUser: true});
       }

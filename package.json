@@ -22,6 +22,7 @@
   "homepage": "https://github.com/mjones61692/hrnyc18-mvp#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "bcrypt-nodejs": "0.0.3",
     "bluebird": "^3.5.2",
     "connect-mongo": "^2.0.1",
     "express": "^4.16.3",

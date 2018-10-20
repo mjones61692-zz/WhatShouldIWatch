@@ -32,7 +32,8 @@ let movieSchema = mongoose.Schema({
 });
 
 let userSchema = mongoose.Schema({
-  user: String
+  user: String,
+  password: String
 });
 
 var Movie = mongoose.model('movie', movieSchema);
@@ -84,9 +85,10 @@ exports.get = function(sort, user) {
   });
 };
 
-exports.saveUser = function(user) {
+exports.saveUser = function(user, password) {
   let newUser = new User({
-    user: user
+    user: user,
+    password: password
   })
   return newUser.save();
 }
