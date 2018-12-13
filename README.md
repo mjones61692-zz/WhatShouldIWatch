@@ -1,6 +1,6 @@
 # What Should I Watch
 
-This was a fun project I completed over the course of two days, where I built a MVP (minimum viable product) of a movie to-watch tracker. The emphasis of this project was on the functionality of the application and creating a lot features, and not so much on the styling. The tech stack used was a React front-end, with an Express.js server and MongoDB database. Please follow this link to see the deployed version of the application (it is using the free-tier of Heroku, so please be patient as the server may need to "wake-up"): [What Should I Watch](http://whatshouldiwatch2018.herokuapp.com)
+This was a fun project I completed over the course of two days, where I built an MVP (minimum viable product) of a movie to-watch tracker. The emphasis of this project was on the functionality of the application and creating a lot of features, and not so much on the styling. The tech stack used was a React front-end, with an Express.js server and MongoDB database. Please follow this link to see the deployed version of the application (it is using the free-tier of Heroku, so please be patient as the server may need to "wake-up"): [What Should I Watch](http://whatshouldiwatch2018.herokuapp.com)
 
 # Project Features
 
